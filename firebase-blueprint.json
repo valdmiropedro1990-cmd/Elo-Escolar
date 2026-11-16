@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "users": {
+      "title": "User Profile",
+      "description": "Stores user profile information and roles.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" },
+        "role": { "type": "string", "enum": ["primary_admin", "secondary_admin", "user"] },
+        "studentIds": { "type": "array", "items": { "type": "string" } },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "students": {
+      "title": "Student",
+      "description": "Stores student information.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "grade": { "type": "string" },
+        "status": { "type": "string" },
+        "enrollmentId": { "type": "string" },
+        "engagementScore": { "type": "number" },
+        "responsibleName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "users",
+      "description": "User profiles collection."
+    },
+    "/students/{studentId}": {
+      "schema": "students",
+      "description": "Students collection."
+    }
+  }
+}

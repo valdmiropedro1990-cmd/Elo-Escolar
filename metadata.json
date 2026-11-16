@@ -1,0 +1,9 @@
+{
+  "name": "Elo Escolar - Angola",
+  "description": "Sistema de Gestão Escolar (CRM) adaptado ao sistema de ensino angolano, do Ensino Primário ao Secundário.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ]
+}
