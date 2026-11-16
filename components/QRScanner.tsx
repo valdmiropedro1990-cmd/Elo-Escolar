@@ -7,7 +7,7 @@ import { X, Camera, RefreshCw } from 'lucide-react';
 interface QRScannerProps {
   onScanSuccess: (decodedText: string) => void;
   onScanFailure?: (error: string) => void;
-  isOpen: boolean;
+  isOpen?: boolean;
   onClose: () => void;
 }
 
