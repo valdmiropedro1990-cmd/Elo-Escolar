@@ -152,7 +152,7 @@ const Sidebar = () => {
         )}
       </AnimatePresence>
 
-      <aside className={`fixed left-0 top-0 h-screen w-64 bg-surface-container-low/80 backdrop-blur-xl flex flex-col gap-2 p-4 z-[58] border-r border-outline-variant/10 transition-transform duration-300 lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed left-0 top-0 h-screen w-64 bg-surface-container-low/95 backdrop-blur-xl flex flex-col gap-2 p-4 z-[58] border-r border-outline-variant/10 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="flex items-center gap-3 px-2 mb-8">
           <div className="w-10 h-10 rounded-xl bg-surface-container-highest flex items-center justify-center shadow-lg overflow-hidden relative">
             {!imageError ? (

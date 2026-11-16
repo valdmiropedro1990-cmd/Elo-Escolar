@@ -206,6 +206,21 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* ==========================================================================
+   BIO ESCOLAR — Layout de Largura Total (Sem barra lateral vertical esquerda)
+   ========================================================================== */
+main,
+main.lg\:ml-64,
+.lg\:ml-64 {
+  margin-left: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+main > div.pt-24 {
+  padding-top: 1rem !important;
+}
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #2c3858; border-radius: 10px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3a4563; }
 

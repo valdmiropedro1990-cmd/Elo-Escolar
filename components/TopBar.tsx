@@ -1,79 +1,259 @@
 'use client';
 
 import React from 'react';
-import { Search, Bell, Settings, User } from 'lucide-react';
-import Image from 'next/image';
-import { useAuth } from '@/context/AuthContext';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { 
+  Bell, 
+  HelpCircle, 
+  ChevronDown,
+  Home,
+  SlidersHorizontal,
+  DoorOpen,
+  QrCode,
+  Megaphone,
+  Mail,
+  Users,
+  Contact,
+  GraduationCap,
+  BookOpen,
+  Coins,
+  Calendar,
+  BarChart3,
+  Settings
+} from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
-const TopBar = ({ title }: { title?: string }) => {
-  const { profile, isAdmin, isPrimaryAdmin, isSecondaryAdmin } = useAuth();
+interface TopBarProps {
+  title?: string;
+  description?: string;
+}
 
-  const getRoleLabel = () => {
-    if (isPrimaryAdmin) return 'Admin Primário';
-    if (isSecondaryAdmin) return 'Admin Secundário';
-    return 'Encarregado';
+export default function TopBar({ title, description }: TopBarProps) {
+  const pathname = usePathname();
+  const { profile, isPrimaryAdmin } = useAuth();
+
+  // 14 horizontal navigation dock items matching Image 2 exactly
+  const navDockItems = [
+    { label: 'Painel', href: '/', icon: Home, match: (p: string) => p === '/' },
+    { label: 'Administração', href: '/admin', icon: SlidersHorizontal, match: (p: string) => p === '/admin' || p.startsWith('/admin/users') },
+    { label: 'Portaria', href: '/porter', icon: DoorOpen, match: (p: string) => p.startsWith('/porter') },
+    { label: 'Gestor de QR', href: '/admin/qr-generator', icon: QrCode, match: (p: string) => p.startsWith('/admin/qr-generator') },
+    { label: 'Mural', href: '/feed', icon: Megaphone, match: (p: string) => p.startsWith('/feed') },
+    { label: 'Mensagens', href: '/chat', icon: Mail, match: (p: string) => p.startsWith('/chat') || p.startsWith('/communications'), badge: 3 },
+    { label: 'Alunos', href: '/students', icon: Users, match: (p: string) => p.startsWith('/students') },
+    { label: 'Funcionários', href: '/staff', icon: Contact, match: (p: string) => p.startsWith('/staff') },
+    { label: 'Gestão Académica', href: '/academic', icon: GraduationCap, match: (p: string) => p.startsWith('/academic') },
+    { label: 'Controlo Escolar', href: '/control', icon: BookOpen, match: (p: string) => p.startsWith('/control') },
+    { label: 'Finanças', href: '/financial', icon: Coins, match: (p: string) => p.startsWith('/financial') || p.startsWith('/payments') },
+    { label: 'Calendários', href: '/calendar', icon: Calendar, match: (p: string) => p.startsWith('/calendar') },
+    { label: 'Relatórios', href: '/claims', icon: BarChart3, match: (p: string) => p.startsWith('/claims') || p.startsWith('/funnel') },
+    { label: 'Definições', href: '/settings', icon: Settings, match: (p: string) => p.startsWith('/settings') || p.startsWith('/profile') || p.startsWith('/support') }
+  ];
+
+  // Map route to automatic descriptions if none provided
+  const getDefaultDescription = (path: string) => {
+    if (path.startsWith('/financial')) return 'Gerir pagamentos de propinas, despesas institucionais e métricas da saúde financeira.';
+    if (path.startsWith('/students')) return 'Monitorize a saúde académica, acompanhe os ciclos de matrícula e faça a curadoria da jornada de aprendizagem.';
+    if (path.startsWith('/control')) return 'Cálculo de médias MAC/NPP/NPT, geração de pautas gerais oficiais MED e emissão de boletins com chancela digital.';
+    if (path.startsWith('/porter')) return 'Validação imediata por câmara de QR Code com registo de frequência e contingência offline.';
+    if (path.startsWith('/staff')) return 'Gerencie os professores, secretários e administradores da comunidade educativa.';
+    if (path.startsWith('/academic')) return 'Controlo de turmas, salas, horários e coordenação pedagógica.';
+    if (path.startsWith('/admin/qr-generator')) return 'Emissão de passes escolares em lote formato folha A4 e cartões individuais com QR Code.';
+    if (path.startsWith('/feed')) return 'Fique por dentro das atividades, eventos e comunicados oficiais da nossa escola.';
+    if (path.startsWith('/chat')) return 'Canal de conversas diretas, grupos por turma e assistente inteligente da comunidade escolar.';
+    if (path.startsWith('/calendar')) return 'Gestão de provas, exames trimestrais e horários de aulas por turma.';
+    if (path.startsWith('/claims')) return 'Gerir reclamações, relatórios e sugestões dos encarregados e alunos.';
+    if (path.startsWith('/transport')) return 'Gestão de carrinhas escolares, motoristas, lista de alunos por rota e avisos automáticos aos pais.';
+    if (path.startsWith('/canteen')) return 'Ementas semanais nutritivas, carregamento de saldo por Multicaixa Express e pagamento pelo passe QR.';
+    if (path.startsWith('/communications')) return 'Envio de comunicados em massa por WhatsApp oficial e SMS aos telemóveis dos pais.';
+    if (path.startsWith('/settings')) return 'Configure as preferências institucionais, segurança e gestão de base de dados da plataforma.';
+    if (path.startsWith('/profile')) return 'Gira as suas credenciais, fotografia e dados de acesso à plataforma.';
+    if (path.startsWith('/support')) return 'Atendimento e suporte técnico dedicado para escolas, secretarias e encarregados em Angola.';
+    return 'Painel de gestão integrada da plataforma digital Bio Escolar Angola.';
   };
 
+  const pageDescription = description || getDefaultDescription(pathname);
+  const displayTitle = title || 'Painel Escolar';
+
   return (
-    <header className="fixed top-0 right-0 w-full lg:w-[calc(100%-16rem)] h-16 bg-surface-container-low/70 flex justify-between items-center px-4 lg:px-8 z-40 border-b border-outline-variant/40 backdrop-blur-xl">
-      <div className="flex items-center flex-1 max-w-xl ml-14 lg:ml-0">
-        <div className="relative w-full group hidden md:block">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant w-4 h-4" />
-          <input 
-            className="w-full bg-background/50 border border-outline-variant/10 rounded-full py-1.5 pl-9 pr-4 text-sm focus:ring-1 focus:ring-secondary/40 transition-all placeholder:text-on-surface-variant/40" 
-            placeholder="Pesquisar..." 
-            type="text"
-          />
-        </div>
-        <div className="sm:hidden flex items-center gap-2">
-          <div className="relative w-8 h-8 rounded-lg overflow-hidden">
-            <Image 
-              src="/logo.png" 
-              alt="Logo" 
-              fill 
-              className="object-contain"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-              }}
-            />
+    <div className="w-full relative z-20 flex flex-col mb-4">
+      
+      {/* Top Background Campus Architecture Photograph with gradient blend */}
+      <div className="absolute top-0 right-0 w-full sm:w-[60%] lg:w-[48%] h-[340px] z-0 pointer-events-none overflow-hidden">
+        <div 
+          className="w-full h-full bg-cover bg-no-repeat bg-center"
+          style={{ backgroundImage: `url('/images/campus-header.jpg')` }}
+        />
+        {/* Soft navy gradient overlays blending the image smoothly into the page */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#020817] via-[#020817]/65 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#020817] via-[#020817]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020817] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-blue-950/25 mix-blend-multiply" />
+      </div>
+
+      {/* Global Top Bar */}
+      <div className="relative z-20 w-full pt-4 pb-2 flex items-center justify-between">
+        
+        {/* Left: Bio Escolar® Brand */}
+        <Link href="/" className="flex items-center gap-3 group">
+          {/* Logo mark: Glowing cyan mortarboard resting over an open book */}
+          <div className="relative w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-105">
+            <svg 
+              viewBox="0 0 64 64" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-10 h-10 drop-shadow-[0_0_12px_rgba(6,182,212,0.8)]"
+            >
+              <defs>
+                <linearGradient id="capGradTopBar" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#38bdf8" />
+                  <stop offset="100%" stopColor="#0284c7" />
+                </linearGradient>
+                <linearGradient id="bookGradTopBar" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#22d3ee" />
+                  <stop offset="100%" stopColor="#0369a1" />
+                </linearGradient>
+              </defs>
+              {/* Mortarboard Diamond */}
+              <polygon points="32,8 58,19 32,30 6,19" fill="url(#capGradTopBar)" stroke="#38bdf8" strokeWidth="1.5" />
+              {/* Cap under-rim */}
+              <path d="M19 25v10c0 4.5 5.8 8 13 8s13-3.5 13-8V25" fill="none" stroke="#38bdf8" strokeWidth="2" />
+              {/* Tassel */}
+              <path d="M50 20v14c0 1.5 1 2 2 2" stroke="#bae6fd" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="52" cy="37" r="1.5" fill="#bae6fd" />
+              {/* Open Book Base */}
+              <path d="M14 42c6-3 12-3 18 1 6-4 12-4 18-1v10c-6-3-12-3-18 1-6-4-12-4-18-1V42z" fill="url(#bookGradTopBar)" opacity="0.9" stroke="#7dd3fc" strokeWidth="1.2" />
+              <line x1="32" y1="43" x2="32" y2="53" stroke="#e0f2fe" strokeWidth="1.5" />
+            </svg>
           </div>
-          <h2 className="font-headline font-bold text-white text-sm truncate">{title || 'Elo Escolar'}</h2>
+
+          <div>
+            <div className="flex items-baseline">
+              <span className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                Bio Escolar
+              </span>
+              <span className="text-[11px] font-bold text-white ml-0.5 relative -top-2">
+                ®
+              </span>
+            </div>
+            <span className="text-[9px] tracking-[0.22em] font-semibold text-cyan-400 block -mt-1 uppercase">
+              PLATAFORMA DIGITAL
+            </span>
+          </div>
+        </Link>
+
+        {/* Right: Actions, Notifications & User Info */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          
+          {/* Notification Button with red badge "1" */}
+          <Link 
+            href="/feed"
+            aria-label="Notificações" 
+            className="w-10 h-10 rounded-full bg-[#0a193d]/60 hover:bg-[#0f2456] border border-blue-500/20 backdrop-blur-md flex items-center justify-center text-blue-200 hover:text-white transition-all relative group"
+          >
+            <Bell className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#ef4444] text-white font-bold text-[9px] flex items-center justify-center shadow-[0_0_8px_rgba(239,68,68,0.8)] border border-[#020817]">
+              1
+            </span>
+          </Link>
+
+          {/* Help Button (?) */}
+          <Link 
+            href="/support"
+            aria-label="Ajuda e Suporte" 
+            className="w-10 h-10 rounded-full bg-[#0a193d]/60 hover:bg-[#0f2456] border border-blue-500/20 backdrop-blur-md flex items-center justify-center text-blue-200 hover:text-white transition-all group"
+          >
+            <HelpCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
+          </Link>
+
+          {/* User Avatar + Profile Label */}
+          <Link href="/profile" className="flex items-center gap-2.5 pl-1 cursor-pointer select-none group">
+            {/* Golden Circular Avatar with "AG" */}
+            <div className="w-10 h-10 rounded-full bg-[#f0a828] text-slate-900 font-extrabold text-sm flex items-center justify-center shadow-[0_0_12px_rgba(240,168,40,0.3)] flex-shrink-0 group-hover:scale-105 transition-transform">
+              {profile?.name ? profile.name.slice(0, 2).toUpperCase() : 'AG'}
+            </div>
+            <div className="hidden sm:block text-left">
+              <div className="flex items-center gap-1">
+                <span className="text-sm font-bold text-white leading-tight group-hover:text-cyan-300 transition-colors">
+                  {isPrimaryAdmin ? 'Administrador' : profile?.name || 'Administrador'}
+                </span>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-300" />
+              </div>
+              <span className="text-[11px] text-slate-400 font-normal leading-tight block">
+                GPA Angola
+              </span>
+            </div>
+          </Link>
+
         </div>
       </div>
 
-      <div className="flex items-center gap-2 lg:gap-4">
-        <button className="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-colors relative group">
-          <Bell className="w-5 h-5 group-hover:scale-110 transition-transform" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full border-2 border-surface-container-low animate-pulse"></span>
-        </button>
-        <Link href="/settings" className="p-2 rounded-full text-on-surface-variant hover:bg-surface-container-highest transition-colors">
-          <Settings className="w-5 h-5 hover:rotate-90 transition-transform duration-500" />
-        </Link>
-        <div className="h-8 w-px bg-outline-variant/20 mx-1 lg:mx-2"></div>
-        <Link href="/profile" className="flex items-center gap-2 lg:gap-3 group">
-          <div className="relative w-8 h-8 lg:w-10 lg:h-10 rounded-full overflow-hidden border-2 border-primary/20 group-hover:border-primary transition-colors cursor-pointer">
-            <Image 
-              src={profile?.photoURL || `https://ui-avatars.com/api/?name=${profile?.name || 'User'}&background=random`} 
-              alt="User Avatar" 
-              fill 
-              className="object-cover"
-              referrerPolicy="no-referrer"
-            />
+      {/* Section Title Section */}
+      <div className="pt-4 pb-3">
+        <div className="flex items-center gap-3">
+          {/* Glowing Cyan Bar Chart Icon (4 vertical bars with rounded caps) */}
+          <div className="flex items-end gap-1 h-7">
+            <div className="w-1.5 h-3 bg-cyan-400 rounded-full drop-shadow-[0_0_6px_rgba(6,182,212,0.8)]" />
+            <div className="w-1.5 h-4.5 bg-cyan-400 rounded-full drop-shadow-[0_0_6px_rgba(6,182,212,0.8)]" />
+            <div className="w-1.5 h-6 bg-cyan-400 rounded-full drop-shadow-[0_0_6px_rgba(6,182,212,0.8)]" />
+            <div className="w-1.5 h-7.5 bg-cyan-400 rounded-full drop-shadow-[0_0_6px_rgba(6,182,212,0.8)]" />
           </div>
-          <div className="hidden sm:block">
-            <p className="text-[10px] lg:text-sm font-bold text-white leading-none truncate max-w-[80px] lg:max-w-[120px] group-hover:text-primary transition-colors">
-              {profile?.name || 'Utilizador'}
-            </p>
-            <p className="text-[8px] lg:text-[10px] text-on-surface-variant uppercase tracking-wider mt-1">
-              {getRoleLabel()}
-            </p>
-          </div>
-        </Link>
+
+          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+            {displayTitle}
+          </h1>
+        </div>
+        <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-2xl">
+          {pageDescription}
+        </p>
       </div>
-    </header>
+
+      {/* 14-Item Horizontal Dock Navigation Bar */}
+      <nav 
+        aria-label="Navegação Principal" 
+        className="w-full bg-[#030d24]/75 backdrop-blur-xl border border-blue-500/20 rounded-2xl p-1.5 flex items-center justify-between gap-1 shadow-2xl overflow-x-auto no-scrollbar mt-2"
+      >
+        {navDockItems.map((item, idx) => {
+          const Icon = item.icon;
+          const isActive = item.match(pathname);
+
+          if (isActive) {
+            return (
+              <div 
+                key={idx}
+                className="flex-1 min-w-[80px] max-w-[120px] py-2 px-2.5 rounded-xl bg-gradient-to-r from-[#0062eb] via-[#007cf8] to-[#0096ff] border border-cyan-400/50 shadow-[0_0_24px_rgba(0,132,255,0.7),inset_0_1px_1px_rgba(255,255,255,0.4)] flex flex-col items-center justify-center text-white cursor-pointer select-none transition-all flex-shrink-0"
+              >
+                <Icon className="w-5 h-5 mb-1 stroke-[2.2] text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.6)]" />
+                <span className="text-[11px] font-bold text-center leading-tight whitespace-nowrap">
+                  {item.label}
+                </span>
+              </div>
+            );
+          }
+
+          return (
+            <Link
+              key={idx}
+              href={item.href}
+              className="flex-1 min-w-[76px] max-w-[115px] py-2 px-1 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.04] transition-all flex flex-col items-center justify-center flex-shrink-0 group relative"
+            >
+              <div className="relative">
+                <Icon className="w-5 h-5 mb-1 group-hover:scale-110 group-hover:text-cyan-400 transition-all stroke-[1.8]" />
+                {item.badge && (
+                  <span className="absolute -top-1.5 -right-2 w-3.5 h-3.5 rounded-full bg-rose-500 text-white font-bold text-[8px] flex items-center justify-center shadow-[0_0_6px_rgba(244,63,94,0.8)] border border-[#030d24]">
+                    {item.badge}
+                  </span>
+                )}
+              </div>
+              <span className="text-[10px] sm:text-[11px] font-medium text-center leading-tight whitespace-nowrap truncate max-w-full px-1">
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
+
+    </div>
   );
-};
-
-export default TopBar;
+}
