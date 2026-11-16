@@ -198,6 +198,14 @@
 
 .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #2c3858; border-radius: 10px; }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #3a4563; }
 
